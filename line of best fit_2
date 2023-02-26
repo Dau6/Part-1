@@ -1,0 +1,34 @@
+import pandas as pd 
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
+import numpy as np
+
+# read in data
+date, temperature = np.loadtxt("C:\\Users\\DELL\\Downloads\\monthly_csv.csv", unpack=True)
+
+# filter out outliers
+keep = np.abs(temperature) < 90
+date = date[keep]
+temperature = temperature[keep]
+
+# define the function to be fitted
+def f(t, a, b, c, d):
+    return a * np.cos(2*np.pi*t + b) + c * np.sin(2*np.pi*t + d)
+
+# fit the curve to the data points
+popt, pcov = curve_fit(f, date, temperature)
+
+# extract the fitted parameters
+a, b, c, d = popt
+
+# generate points for the line of best fit
+x_fit = np.linspace(date.min(), date.max(), 1000)
+y_fit = f(x_fit, a, b, c, d)
+
+# plot the data points and the line of best fit
+plt.plot(date, temperature, 'bo', label='data')
+plt.plot(x_fit, y_fit, 'r-', label='line of best fit')
+plt.legend()
+plt.show()
+
+
